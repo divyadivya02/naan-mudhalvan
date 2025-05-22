@@ -1,0 +1,58 @@
+import random
+from datetime import datetime
+
+# Generate traffic data
+def generate_traffic_data(n_samples=1000):
+    data = []
+    for _ in range(n_samples):
+        hour = random.randint(0, 23)
+        day_of_week = random.randint(0, 6)
+        weather = random.choice([0, 1, 2])  # 0=sunny, 1=rainy, 2=snowy
+        accident = 1 if random.random() < 0.1 else 0
+        vehicle_count = int(random.expovariate(1/50))
+        congestion = (vehicle_count * 0.5 +
+                      weather * 10 +
+                      accident * 30 +
+                      random.gauss(0, 5))
+        data.append({
+            "hour": hour,
+            "day_of_week": day_of_week,
+            "weather": weather,
+            "accident": accident,
+            "vehicle_count": vehicle_count,
+            "congestion_level": congestion
+        })
+    return data
+
+# Train a simple average-based model
+def train_model(data):
+    weights = {
+        "vehicle_count": 0.5,
+        "weather": 10,
+        "accident": 30
+    }
+    return weights
+
+# Simulate prediction
+def simulate_real_time_prediction(weights):
+    now = datetime.now()
+    input_data = {
+        "hour": now.hour,
+        "day_of_week": now.weekday(),
+        "weather": random.choice([0, 1, 2]),
+        "accident": random.choice([0, 1]),
+        "vehicle_count": int(random.expovariate(1/60))
+    }
+    congestion = (
+        input_data["vehicle_count"] * weights["vehicle_count"] +
+        input_data["weather"] * weights["weather"] +
+        input_data["accident"] * weights["accident"]
+    )
+    print(f"Real-time Congestion Prediction at {now.strftime('%H:%M:%S')} = {congestion:.2f}")
+    print(f"Sample Input: {input_data}")
+
+# Main execution
+if __name__ == "__main__":
+    traffic_data = generate_traffic_data()
+    model_weights = train_model(traffic_data)
+    simulate_real_time_prediction(model_weights)
