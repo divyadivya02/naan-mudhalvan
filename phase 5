@@ -1,0 +1,33 @@
+import heapq
+
+def dijkstra(graph, start):
+    queue = [(0, start)]
+    distances = {node: float('infinity') for node in graph}
+    distances[start] = 0
+
+    while queue:
+        current_distance, current_node = heapq.heappop(queue)
+
+        for neighbor, weight in graph[current_node].items():
+            distance = current_distance + weight
+
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                heapq.heappush(queue, (distance, neighbor))
+
+    return distances
+
+# Sample graph with traffic weights (representing travel time in minutes)
+traffic_graph = {
+    'A': {'B': 4, 'C': 2},
+    'B': {'D': 5},
+    'C': {'B': 1, 'D': 8},
+    'D': {}
+}
+
+start_node = 'A'
+shortest_paths = dijkstra(traffic_graph, start_node)
+
+print(f"Shortest travel times from {start_node}:")
+for node, time in shortest_paths.items():
+    print(f"  To {node}: {time} minutes")
